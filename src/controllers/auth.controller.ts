@@ -4,14 +4,14 @@ import User, { IUser } from '../models/user.model';
 
 export const register = async (req: Request, res: Response): Promise<any> => {
     try {
-        const { username, email, password, role } = req.body;
+        const { firstName, lastName, email, password, role } = req.body;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already exists' });
         }
 
-        const newUser = new User({ username, email, password, role });
+        const newUser = new User({ firstName, lastName, email, password, role });
         await newUser.save();
 
         res.status(201).json({ message: 'User registered successfully' });
@@ -20,7 +20,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
     }
 };
 
-export const login = async (req: Request, res: Response): Promise<any> => {
+export const login = async (req: any, res: Response): Promise<any> => {
     try {
         const JWT_SECRET = process.env.JWT_SECRET;
         if (!JWT_SECRET) {
@@ -33,9 +33,18 @@ export const login = async (req: Request, res: Response): Promise<any> => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '72h' });
+        req.session.isLoggedIn = true;
 
-        res.json({ token });
+        res.setHeader("Authorization", `Bearer ${token}`);
+        res.json({
+            user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role
+            }
+        });
     } catch (error) {
         res.status(500).json({ error: 'Error logging in' });
     }
