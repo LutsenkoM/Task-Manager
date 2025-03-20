@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
 interface AuthRequest extends Request {
     user?: { id: string; role: string };
 }
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction): any => {
+    const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
+
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {

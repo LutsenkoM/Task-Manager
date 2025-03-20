@@ -11,7 +11,7 @@ const session = require('express-session');
 const cors = require("cors");
 const MongoDbStore = require('connect-mongodb-session')(session);
 const store = new MongoDbStore({
-    uri: process.env.MONGODB_URI,
+    uri: 'mongodb://localhost:27017/task-manager',
     collection: 'sessions',
 });
 const PORT = process.env.PORT || 4000;

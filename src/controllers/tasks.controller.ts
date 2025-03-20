@@ -4,7 +4,7 @@ import Task from '../models/task.model';
 export const getTasks = async (req: any, res: Response) => {
     try {
         const tasks = await Task.find({ user: req.user!.id });
-        res.json(tasks);
+        res.json(tasks || []);
     } catch (error) {
         res.status(500).json({ error: 'Error fetching tasks' });
     }
